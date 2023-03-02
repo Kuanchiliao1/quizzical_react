@@ -1,3 +1,52 @@
 * {
   box-sizing: border-box;
 }
+
+body {
+  font-family: sans-serif;
+  background-image: url("./assets/background.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-attachment: fixed;
+  background-size: cover;
+  overflow: hidden;
+}
+
+.start-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+.title {
+  font-family: 'Karla';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 31.25px;
+  line-height: 37px;
+  text-align: center;
+  color: #293264;
+  margin: 0;
+}
+
+.start-page p {
+  font-family: 'Inter';
+  font-weight: 400;
+  line-height: 19px;
+  color: #293264;  
+}
+
+button {
+  background: #4D5B9E;
+  border: none;
+  padding: 1.5em 4em;
+  color: white;
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  text-align: center;
+  color: #F5F7FB;
+}
