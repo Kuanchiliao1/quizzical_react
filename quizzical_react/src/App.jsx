@@ -37,13 +37,14 @@ function App() {
         .then(res => res.json())
         .then(data => {
           const questionObjects = data.results.map(questionData => {
+            const {question, incorrect_answers, correct_answer} = questionData
             return {
-              question: decodeBase64(questionData.question),
+              question: decodeBase64(question),
               choices: shuffle([
-                {text: decodeBase64(questionData.correct_answer), correct: true},
-                {text: decodeBase64(questionData.incorrect_answers[0]), correct: false},
-                {text: decodeBase64(questionData.incorrect_answers[1]), correct: false},
-                {text: decodeBase64(questionData.incorrect_answers[2]), correct: false}
+                {text: decodeBase64(correct_answer), correct: true},
+                {text: decodeBase64(incorrect_answers[0]), correct: false},
+                {text: decodeBase64(incorrect_answers[1]), correct: false},
+                {text: decodeBase64(incorrect_answers[2]), correct: false}
               ])
             }
           })
