@@ -1,15 +1,20 @@
 import "./index.css"
 
 export default function MainPage(props) {
-  const questionElements = props.questions.map(question => {
+  const questionElements = props.questions.map((questionData, index) => {
+    const {question, choices} = questionData
     return (
-      <div className="question-container">
-        <h2>{question.question}</h2>
-        <p>{question.choices[0].text}</p>
-        <p>{question.choices[1].text}</p>
-        <p>{question.choices[2].text}</p>
-        <p>{question.choices[3].text}</p>
-      </div>
+      <form id={`group-${index}`} className="question-container">
+        <h2>{question}</h2>
+        <label htmlFor="choice-one">{choices[0].text}</label>
+          <input type="radio" name="choice" id="choice-one" />
+        <label htmlFor="choice-two">{choices[1].text}</label>
+          <input type="radio" name="choice" id="choice-two" />
+        <label htmlFor="choice-three">{choices[2].text}</label>
+          <input type="radio" name="choice" id="choice-three" />
+        <label htmlFor="choice-four">{choices[3].text}</label>
+          <input type="radio" name="choice" id="choice-four" />
+      </form>
     )
   })
 
