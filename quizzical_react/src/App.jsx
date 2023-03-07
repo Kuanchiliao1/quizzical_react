@@ -15,7 +15,7 @@ function App() {
   // fisher-yates shuffle
   function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i))
+      const j = Math.floor(Math.random() * (i + 1))
       const temp = array[i]
       array[i] = array[j]
       array[j] = temp
@@ -29,11 +29,12 @@ function App() {
     return string
   }
 
+  // Only run on initial render/rerender
   React.useEffect(
     () => {
       if (questions.length > 0) return
 
-      fetch("https://opentdb.com/api.php?amount=10&type=multiple&encode=base64")
+      fetch("https://opentdb.com/api.php?amount=3&type=multiple&encode=base64")
         .then(res => res.json())
         .then(data => {
           const questionObjects = data.results.map(questionData => {
