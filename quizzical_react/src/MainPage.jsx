@@ -48,8 +48,11 @@ export default function MainPage(props) {
     }
   }
 
-  function getScore() {
-    ""
+  function getScoreMessage() {
+    const formArray = Object.values(allFormData)
+    const totalCorrect = formArray.filter(form => form.correct === form.checkedChoice).length
+    const totalQuestions = formArray.length
+    return `You scored ${totalCorrect}/${totalQuestions} correct answers`
   }
 
   // Is this a good task for useEffect?
@@ -68,13 +71,16 @@ export default function MainPage(props) {
       const choiceId = (index + 1).toString();
       const isSelected = selectedChoice === choiceId ? true : false;
 
-      const correctClass =
+      const correctAnswerClass =
         isQuizSubmitted && correctChoice === choiceId
           ? "show-correct-choice"
           : "";
       const submittedClass = isQuizSubmitted ? "submitted" : "";
+      const disabledClass = 
+        !correctAnswerClass && !isSelected ? "disable" : ""
+
       return (
-        <label className={`${correctClass} ${submittedClass}`}>
+        <label className={`${correctAnswerClass} ${submittedClass} ${disabledClass}`}>
           <input
             onChange={handleEvent}
             type="radio"
@@ -102,8 +108,11 @@ export default function MainPage(props) {
     <div className="questions-container">
       {questionElements}
       <h1></h1>
+      
       {isQuizSubmitted ? (
-        <button onClick={props.start}>Play again</button>
+        <div className="game-stat-container">
+          <p className="score">{getScoreMessage()}</p><button onClick={props.fetchQuestions}>Play again</button>
+        </div>
       ) : (
         <button onClick={submitAllForms}>Check answers</button>
       )}
