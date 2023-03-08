@@ -5,8 +5,9 @@ import StartPage from './StartPage'
 import MainPage from './MainPage'
 
 function App() {
-  const [start, setStart] = useState(false)
-  const [questions, setQuestions] = useState([])
+  const [start, setStart] = React.useState(false)
+  const [questions, setQuestions] = React.useState([])
+  const [newQuestions, setNewQuestions] = React.useState([])
 
   function startQuiz() {
     setStart(true)
@@ -29,11 +30,15 @@ function App() {
     return string
   }
 
+  function fetchNewQuestions() {
+    setNewQuestions([])
+    setStart(false)
+    console.table(questions)
+  }
+
   // Only run on initial render/rerender
   React.useEffect(
     () => {
-      if (questions.length > 0) return
-
       fetch("https://opentdb.com/api.php?amount=3&type=multiple&encode=base64")
         .then(res => res.json())
         .then(data => {
@@ -49,15 +54,14 @@ function App() {
               ])
             }
           })
-
+          console.log("effect")
           setQuestions(questionObjects)
         })
-    }, [])
+    }, [newQuestions])
 
   return (
     <div className="App">
-      {start ? <MainPage questions={questions} /> : <StartPage start={startQuiz} />}
-      
+      {start ? <MainPage questions={questions} fetchQuestions={fetchNewQuestions} /> : <StartPage start={startQuiz} />}
     </div>
   )
 }
