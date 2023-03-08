@@ -1,6 +1,5 @@
-import "./index.css";
+import "../index.css";
 import React from "react";
-import "./index.css";
 
 export default function MainPage(props) {
   const [allFormData, setAllFormData] = React.useState(
@@ -18,7 +17,7 @@ export default function MainPage(props) {
 
   const [isQuizSubmitted, setIsQuizSubmitted] = React.useState(false);
 
-  function handleEvent(event) {
+  function handleChoiceSelection(event) {
     const { value, dataset } = event.target;
     const formId = dataset.formId;
     setAllFormData(function (oldAllFormData) {
@@ -41,7 +40,7 @@ export default function MainPage(props) {
     return Object.values(allFormData).every((form) => form.checkedChoice);
   }
 
-  function submitAllForms() {
+  function submitQuiz() {
     if (areFormsAllFilled()) {
       setIsQuizSubmitted((oldBoolean) => !oldBoolean);
     } else {
@@ -57,6 +56,16 @@ export default function MainPage(props) {
   }
   
   function handleExplanationBtn(formId, question) {
+    setQuestionExplanations(oldExplanations => {
+      return {
+        ...oldExplanations,
+        [formId]: {
+          isBtnDisabled: true,
+          waiting: true
+        }
+      }
+    })
+
     const secretKey = 'stuff here to do,s,k,-,w,X,a,p,E,k,f,1,8,7,t,c,Y,o,E,e,C,F,f,d,T,3,B,l,b,k,F,J,N,X,5,F,l,3,v,E,7,m,6,e,4,7,A,b,r,x,6,p,no stuff here to do!';
     fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -69,7 +78,7 @@ export default function MainPage(props) {
         messages: [
           {role: "system", content: "You are an AI assistant capable of providing the user with any request. You have a fun loving personality and are humorous"},
           {role: "user",
-          content: `${question} Give a short and witty one paragraph long explanation for someone without context`
+          content: `${question} Give a short and witty one paragraph long explanation for someone without context. Use emojis as appropriate.`
           }
         ],
         max_tokens: 250,
@@ -82,30 +91,30 @@ export default function MainPage(props) {
         setQuestionExplanations(oldExplanations => {
           return {
             ...oldExplanations,
-            [formId]: aiResponse,
+            [formId]: {
+              response: aiResponse,
+              isBtnDisabled: true,
+              waiting: false
+            }
           }
         })
       })
   }
 
-  // Is this a good task for useEffect?
-  React.useEffect(function () {
-    console.log("effect");
-    questionElements.forEach((formEl) => {});
-  }, []);
-
   const questionElements = props.questions.map((questionData, index) => {
     const { question, choices } = questionData;
     const formId = (index + 1).toString();
-    const selectedChoice = allFormData[formId].checkedChoice;
-    const correctChoice = allFormData[formId].correct;
+    const selectedChoiceNum = allFormData[formId].checkedChoice;
+    const correctChoiceNum = allFormData[formId].correct;
+    const hasQuestionExplanation = !!questionExplanations[formId]
+    const isWaitingForResponse = hasQuestionExplanation && questionExplanations[formId].waiting
 
     const formInputs = choices.map((choice, index) => {
       const choiceId = (index + 1).toString();
-      const isSelected = selectedChoice === choiceId ? true : false;
+      const isSelected = selectedChoiceNum === choiceId ? true : false;
 
       const correctAnswerClass =
-        isQuizSubmitted && correctChoice === choiceId
+        isQuizSubmitted && correctChoiceNum === choiceId
           ? "show-correct-choice"
           : "";
       const submittedClass = isQuizSubmitted ? "submitted" : "";
@@ -116,7 +125,7 @@ export default function MainPage(props) {
         <>
           <label className={`${correctAnswerClass} ${submittedClass} ${disabledClass}`}>
             <input
-              onChange={handleEvent}
+              onChange={handleChoiceSelection}
               type="radio"
               name="choice"
               value={choiceId}
@@ -130,7 +139,10 @@ export default function MainPage(props) {
             className="ai-explaination"
             onClick={() => handleExplanationBtn(formId, question)}
             type="button"
-            disabled={questionExplanations[formId].disabled}
+            disabled={
+              hasQuestionExplanation
+              && questionExplanations[formId].isBtnDisabled
+            }
             >
               Generate explanation
           </button>}
@@ -143,7 +155,11 @@ export default function MainPage(props) {
         <form id={formId} className="question-container">
           <h2>{question}</h2>
           <div className="choices-container">{formInputs}</div>
-          <p>{isQuizSubmitted && questionExplanations[formId]}</p><i style={{visibility: "hidden"}} className="fas fa-spinner fa-pulse"></i>
+          
+          <p>
+            {(isQuizSubmitted && hasQuestionExplanation) && questionExplanations[formId].response}
+            {isWaitingForResponse && <i  className="fas fa-spinner fa-pulse"></i>}
+          </p>
         </form>
       </>
     );
@@ -163,7 +179,7 @@ export default function MainPage(props) {
           </button>
         </div>
       ) : (
-        <button onClick={submitAllForms}>Check answers</button>
+        <button className="check-answers" onClick={submitQuiz}>Check answers</button>
       )}
     </div>
   );
