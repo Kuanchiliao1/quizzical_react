@@ -98,6 +98,7 @@ button {
   display: block;
   border-radius: 1.25rem;
   cursor: pointer;
+  min-width: fit-content;
 }
 
 /* Hide radio */
@@ -107,7 +108,8 @@ input {
   pointer-events: none;
 }
 
-label {
+label,
+button.ai-explaination {
   display: grid;
   position: relative;
   margin-bottom: 1.25rem;
@@ -120,6 +122,13 @@ label {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
+}
+
+button.ai-explaination {
+  margin: 0;
+  margin-bottom: 1.25rem;
+  outline: none;
+  background: #daa7d7;
 }
 
 label:has(input:checked),
@@ -140,6 +149,7 @@ label:has(input:checked).submitted {
 
 label:has(input:checked).submitted.show-correct-choice {
   background-color: lightgreen;
+  box-shadow: 0 0 3px 3px rgb(86, 230, 86);
 }
 
 label:has(input:checked).submitted {
