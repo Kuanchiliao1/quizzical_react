@@ -3,7 +3,6 @@ import React from "react";
 import "./index.css";
 import StartPage from "./components/StartPage";
 import MainPage from "./components/MainPage";
-import getAIOutput from "./utils";
 
 function App() {
   const [start, setStart] = React.useState(false);
