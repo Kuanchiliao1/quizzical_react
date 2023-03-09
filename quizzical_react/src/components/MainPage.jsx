@@ -47,27 +47,29 @@ export default function MainPage(props) {
 
   // Only run on initial render/rerender
   React.useEffect(() => {
-    if (!questions && !props.customQuizTopic) {
-      fetch("https://opentdb.com/api.php?amount=2&type=multiple&encode=base64")
-        .then((res) => res.json())
-        .then((data) => {
-          const questionObjects = data.results.map((questionData) => {
-            const { question, incorrect_answers, correct_answer } =
-              questionData;
-            return {
-              question: decodeBase64(question),
-              choices: shuffle([
-                { text: decodeBase64(correct_answer), correct: true },
-                { text: decodeBase64(incorrect_answers[0]), correct: false },
-                { text: decodeBase64(incorrect_answers[1]), correct: false },
-                { text: decodeBase64(incorrect_answers[2]), correct: false },
-              ]),
-            };
+    if (!questions) {
+      if (!props.customQuizTopic) {
+        fetch("https://opentdb.com/api.php?amount=2&type=multiple&encode=base64")
+          .then((res) => res.json())
+          .then((data) => {
+            const questionObjects = data.results.map((questionData) => {
+              const { question, incorrect_answers, correct_answer } =
+                questionData;
+              return {
+                question: decodeBase64(question),
+                choices: shuffle([
+                  { text: decodeBase64(correct_answer), correct: true },
+                  { text: decodeBase64(incorrect_answers[0]), correct: false },
+                  { text: decodeBase64(incorrect_answers[1]), correct: false },
+                  { text: decodeBase64(incorrect_answers[2]), correct: false },
+                ]),
+              };
+            });
+            setQuestions(questionObjects);
           });
-          setQuestions(questionObjects);
-        });
-      } else if (!questions) {
+      } else {
         setQuestions(getAIOutput(setQuestions, props.customQuizTopic));
+      }
       }
   }, []);
 
@@ -177,8 +179,15 @@ export default function MainPage(props) {
           </button>
         </div>
       ) : (
-        <button className="check-answers" onClick={submitQuiz}>Check answers</button>
+        questions && <button className="check-answers" onClick={submitQuiz}>Check answers</button>
       )}
+      {!questions && 
+        <div>
+          <p className="loading">
+            Generating quiz... <i  className="fas fa-spinner fa-pulse"></i>
+          </p>
+        </div>
+      }
     </div>
   );
 }
