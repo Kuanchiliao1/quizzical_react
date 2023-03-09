@@ -5,12 +5,10 @@ import getAIOutput from "../utils";
 
 export default function MainPage(props) {
   const [allFormData, setAllFormData] = React.useState(null);
-
   const [questionExplanations, setQuestionExplanations] = React.useState({})
 
   const [isQuizSubmitted, setIsQuizSubmitted] = React.useState(false);
   const [questions, setQuestions] = React.useState(null);
-  const [newQuestions, setNewQuestions] = React.useState([]);
 
   function handleChoiceSelection(event) {
     const { value, dataset } = event.target;
@@ -43,18 +41,13 @@ export default function MainPage(props) {
     return string;
   }
 
-  function fetchNewQuestions() {
-    setNewQuestions([]);
-  }
-
   function handlePlayAgain() {
-    fetchNewQuestions()
     props.end()
   }
 
   // Only run on initial render/rerender
   React.useEffect(() => {
-    if (!questions) {
+    if (!questions && !props.customQuizTopic) {
       fetch("https://opentdb.com/api.php?amount=2&type=multiple&encode=base64")
         .then((res) => res.json())
         .then((data) => {
@@ -72,8 +65,9 @@ export default function MainPage(props) {
             };
           });
           setQuestions(questionObjects);
-          getAIOutput()
         });
+      } else if (!questions) {
+        setQuestions(getAIOutput(setQuestions, props.customQuizTopic));
       }
   }, []);
 

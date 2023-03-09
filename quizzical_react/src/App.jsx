@@ -7,6 +7,7 @@ import getAIOutput from "./utils";
 
 function App() {
   const [start, setStart] = React.useState(false);
+  const [customQuizTopic, setCustomQuizTopic] = React.useState("")
 
   function startQuiz() {
     setStart(true);
@@ -19,9 +20,9 @@ function App() {
   return (
     <div className="App">
       {start ? (
-        <MainPage end={endQuiz} />
+        <MainPage end={endQuiz} customQuizTopic={customQuizTopic} />
       ) : (
-        <StartPage start={startQuiz} />
+        <StartPage start={startQuiz} setCustomQuizTopic={setCustomQuizTopic} customQuizTopic={customQuizTopic}/>
       )}
     </div>
   );
