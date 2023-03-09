@@ -1,14 +1,14 @@
 import "../index.css";
 import React from "react";
 import QuestionElements from "./QuestionElements"
-import getAIOutput from "../utils";
+import {fetchAIOutput, fetchQuizApiOutput} from "../utils";
 
 export default function MainPage(props) {
   const [allFormData, setAllFormData] = React.useState(null);
   const [questionExplanations, setQuestionExplanations] = React.useState({})
 
   const [isQuizSubmitted, setIsQuizSubmitted] = React.useState(false);
-  const [questions, setQuestions] = React.useState(null);
+  const [questionsData, setQuestionsData] = React.useState(null);
 
   function handleChoiceSelection(event) {
     const { value, dataset } = event.target;
@@ -24,59 +24,25 @@ export default function MainPage(props) {
     });
   }
  
-  // fisher-yates shuffle
-  function shuffle(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      const temp = array[i];
-      array[i] = array[j];
-      array[j] = temp;
-    }
-    return array;
-  }
-
-  function decodeBase64(string) {
-    string = atob(string);
-    string = string.replace(/Ã©/, "é");
-    return string;
-  }
-
   function handlePlayAgain() {
     props.end()
   }
 
   // Only run on initial render/rerender
   React.useEffect(() => {
-    if (!questions) {
+    if (!questionsData) {
       if (!props.customQuizTopic) {
-        fetch("https://opentdb.com/api.php?amount=2&type=multiple&encode=base64")
-          .then((res) => res.json())
-          .then((data) => {
-            const questionObjects = data.results.map((questionData) => {
-              const { question, incorrect_answers, correct_answer } =
-                questionData;
-              return {
-                question: decodeBase64(question),
-                choices: shuffle([
-                  { text: decodeBase64(correct_answer), correct: true },
-                  { text: decodeBase64(incorrect_answers[0]), correct: false },
-                  { text: decodeBase64(incorrect_answers[1]), correct: false },
-                  { text: decodeBase64(incorrect_answers[2]), correct: false },
-                ]),
-              };
-            });
-            setQuestions(questionObjects);
-          });
+        setQuestionsData(fetchQuizApiOutput(setQuestionsData))
       } else {
-        setQuestions(getAIOutput(setQuestions, props.customQuizTopic));
+        setQuestionsData(fetchAIOutput(setQuestionsData, props.customQuizTopic));
       }
-      }
+    }
   }, []);
 
   React.useEffect(() => {
-    if (questions) {
+    if (questionsData) {
       setAllFormData(
-        questions.reduce((object, questionData, index) => {
+        questionsData.reduce((object, questionData, index) => {
           let formId = index + 1;
           object[formId] = {
             correct: findCorrectChoice(questionData).toString(),
@@ -86,7 +52,7 @@ export default function MainPage(props) {
         }, {})
       )
     }
-  }, [questions])
+  }, [questionsData])
 
   // returns 1-4 to represent correct choice
   function findCorrectChoice(questionData) {
@@ -161,7 +127,7 @@ export default function MainPage(props) {
   return (
     <div className="questions-container">
       < QuestionElements
-        questions={questions}
+        questions={questionsData}
         questionExplanations={questionExplanations}
         allFormData={allFormData}
         isQuizSubmitted={isQuizSubmitted}
@@ -179,9 +145,9 @@ export default function MainPage(props) {
           </button>
         </div>
       ) : (
-        questions && <button className="check-answers" onClick={submitQuiz}>Check answers</button>
+        questionsData && <button className="check-answers" onClick={submitQuiz}>Check answers</button>
       )}
-      {!questions && 
+      {!questionsData && 
         <div>
           <p className="loading">
             Generating quiz... <i  className="fas fa-spinner fa-pulse"></i>

@@ -1,6 +1,6 @@
 const secretKey = 'stuff here to do,s,k,-,w,X,a,p,E,k,f,1,8,7,t,c,Y,o,E,e,C,F,f,d,T,3,B,l,b,k,F,J,N,X,5,F,l,3,v,E,7,m,6,e,4,7,A,b,r,x,6,p,no stuff here to do!';
 
-export default function getAIOutput(setQuestions, customTopic) {
+export function fetchAIOutput(setQuestionsData, customTopic) {
   var begin=Date.now()
     fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -43,10 +43,35 @@ export default function getAIOutput(setQuestions, customTopic) {
         var end= Date.now();
         console.log((end-begin)/1000+"secs")
         debugger
-        const aiQuiz = JSON.parse(data.choices[0].message.content)
-        console.log(aiQuiz)
-        setQuestions(parseQuiz(aiQuiz))
+        try {
+          const aiQuiz = JSON.parse(data.choices[0].message.content)
+          console.log(aiQuiz)
+          setQuestionsData(parseQuiz(aiQuiz))
+        } catch (e) {
+          fetchQuizApiOutput(setQuestionsData)
+        }
       })
+}
+
+export function fetchQuizApiOutput(setQuestionsData) {
+  fetch("https://opentdb.com/api.php?amount=2&type=multiple&encode=base64")
+    .then((res) => res.json())
+    .then((data) => {
+      const questionObjects = data.results.map((questionData) => {
+        const { question, incorrect_answers, correct_answer } =
+          questionData;
+        return {
+          question: decodeBase64(question),
+          choices: shuffle([
+            { text: decodeBase64(correct_answer), correct: true },
+            { text: decodeBase64(incorrect_answers[0]), correct: false },
+            { text: decodeBase64(incorrect_answers[1]), correct: false },
+            { text: decodeBase64(incorrect_answers[2]), correct: false },
+          ]),
+        };
+      });
+      setQuestionsData(questionObjects);
+    });
 }
 
 function parseQuiz(quizArray) {
@@ -56,12 +81,29 @@ function parseQuiz(quizArray) {
     const answers = questionArray.slice(1)
     return ({
       question: questionText,
-      choices: answers.map(answer => {
+      choices: shuffle(answers.map(answer => {
         return {
           text: answer.replace('(T)', '').trim(),
           correct: answer.includes('(T)')
         }
-      }),
+      })),
     })
   })
+}
+
+// fisher-yates shuffle
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
+  }
+  return array;
+}
+
+function decodeBase64(string) {
+  string = atob(string);
+  string = string.replace(/Ã©/, "é");
+  return string;
 }
