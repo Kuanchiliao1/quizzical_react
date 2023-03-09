@@ -1,5 +1,6 @@
+const secretKey = 'stuff here to do,s,k,-,w,X,a,p,E,k,f,1,8,7,t,c,Y,o,E,e,C,F,f,d,T,3,B,l,b,k,F,J,N,X,5,F,l,3,v,E,7,m,6,e,4,7,A,b,r,x,6,p,no stuff here to do!';
+
 export default function getAIOutput(setQuestions, customTopic) {
-  const secretKey = 'stuff here to do,s,k,-,w,X,a,p,E,k,f,1,8,7,t,c,Y,o,E,e,C,F,f,d,T,3,B,l,b,k,F,J,N,X,5,F,l,3,v,E,7,m,6,e,4,7,A,b,r,x,6,p,no stuff here to do!';
   var begin=Date.now()
     fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -10,14 +11,27 @@ export default function getAIOutput(setQuestions, customTopic) {
       // Info I'm passing to the AI such as the prompt, length, model etc.
       body: JSON.stringify({
         messages: [
-          {role: "system", content: "You are an AI assistant capable of providing the user with amazing and interesting quizzes on the selected topic. They can be slightly humorous"},
+          {role: "system", content: "You quiz generation AI. Provide user with accurate and entertaining multiple choice quizzes on the selected topic. The quizzes should consist of four moderate difficulty questions with multiple-choice answers. If the topic is unknown or unclear, default to 'General' as the topic."},
           {role: "user",
           content: `
-          ["What is the scientific name for laser light^|Coherent Electromagnetic Radiation (T)^|Incoherent Electromagnetic Radiation^|Diffuse Electromagnetic Radiation^|Scattered Electromagnetic Radiation",
-          "What type of laser is commonly used for cutting metal^|Gas Laser^|Solid-State Laser^|Excimer Laser^|Fiber Laser (T)",
-          "What is the name of the principle that states that the energy of a laser beam is proportional to the frequency of the light it produces^|Einstein's Theory of Relativity^|Planck's Law of Photon Energy (T)^|Schrödinger's Equation^|Heisenberg's Uncertainty Principle",
-          "What type of laser is used in CD and DVD players^|Gas Laser^|Solid-State Laser^|Excimer Laser^|Semiconductor Laser (T)"]
-          Generate a four question quiz formatted as shown above. Include ONLY the array in the response and nothing else. Topic: ${customTopic}`
+          Generate a quiz formatted as shown below. If the topic is gibberish/unknown, then treat it as "general". Output must start with [ character and end with ] character
+          ###
+          Input: Quiz topic: drugs
+          Output:
+          ["What is the active ingredient in aspirin?^|Salicylic acid (T)^|Acetaminophen^|Ibuprofen^|Naproxen",
+          "What type of drug is used to treat depression?^|Antidepressants (T)^|Antihistamines^|Antipsychotics^|Antibiotics",
+          "What type of drug is used to treat anxiety?^|Benzodiazepines (T)^|Antidepressants^|Antihistamines^|Antipsychotics",
+          "What type of drug is used to treat allergies?^|Antihistamines (T)^|Antidepressants^|Antipsychotics^|Antibiotics"]
+          ###
+          Input: Quiz topic: Star Wars
+          Output:
+          ["Who is the main protagonist of the original Star Wars trilogy?^|Luke Skywalker (T)^|Han Solo^|Princess Leia^|Darth Vader",
+          "What is the name of the planet where the Jedi Temple is located?^|Tatooine^|Coruscant (T)^|Endor^|Alderaan",
+          "Who is the pilot of the Millennium Falcon?^|Chewbacca (T)^|R2-D2^|Lando Calrissian^|C-3PO",
+          "Who is the main antagonist of the original Star Wars trilogy?^|Darth Vader (T)^|The Emperor^|Boba Fett^|Jabba the Hutt"]
+          Input: Quiz topic: ${customTopic}
+          Output:
+          `
           }
         ],
         max_tokens: 500,
@@ -28,6 +42,7 @@ export default function getAIOutput(setQuestions, customTopic) {
       .then(data => {
         var end= Date.now();
         console.log((end-begin)/1000+"secs")
+        debugger
         const aiQuiz = JSON.parse(data.choices[0].message.content)
         console.log(aiQuiz)
         setQuestions(parseQuiz(aiQuiz))
