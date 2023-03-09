@@ -10,6 +10,7 @@ body {
   background-position: center center;
   background-attachment: fixed;
   background-size: cover;
+  margin: 0;
   color: #293264;
   font-family: 'Karla', sans-serif;
 }
@@ -51,7 +52,13 @@ p.start-description {
 span.warning {
   color: red;
   display: block;
-  padding-top: 1rem;
+  padding-block: 1rem;
+  font-size: 1.2rem;
+}
+
+p.loading {
+  font-size: 1.5rem;
+  text-align: center;
 }
 
 .score {
@@ -71,8 +78,13 @@ span.warning {
 }
 
 p.start-description {
-  max-width: 70%;
-  margin: 2.5rem auto;
+  max-width: 50%;
+  margin-inline: auto;
+  margin-top: 2.5rem;
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .questions-container {
@@ -123,6 +135,16 @@ input[type="radio"] {
   pointer-events: none;
 }
 
+input.custom-quiz {
+  width: 50%;
+  padding: 1rem;
+  border: 1px solid #293264;
+  border-radius: .4rem;
+  font-size: 1rem;
+  margin-top: 1.5rem;
+  min-width: fit-content;
+}
+
 label,
 button.ai-explaination {
   display: grid;
@@ -149,6 +171,10 @@ button.ai-explaination {
 button.ai-explaination:disabled {
   background: #D6DBF5;
   cursor: not-allowed;
+}
+
+button.start-quiz {
+  margin-top: 1rem;
 }
 
 label:has(input:checked),
