@@ -1,21 +1,14 @@
 import "../index.css";
 import React from "react";
+import QuestionElements from "./QuestionElements"
+import getAIOutput from "../utils";
 
 export default function MainPage(props) {
-  const [allFormData, setAllFormData] = React.useState(
-    props.questions.reduce((object, questionData, index) => {
-      let formId = index + 1;
-      object[formId] = {
-        correct: findCorrectChoice(questionData).toString(),
-        checkedChoice: 0,
-      };
-      return object;
-    }, {})
-  );
-
+  const [allFormData, setAllFormData] = React.useState(null);
   const [questionExplanations, setQuestionExplanations] = React.useState({})
 
   const [isQuizSubmitted, setIsQuizSubmitted] = React.useState(false);
+  const [questions, setQuestions] = React.useState(null);
 
   function handleChoiceSelection(event) {
     const { value, dataset } = event.target;
@@ -30,6 +23,68 @@ export default function MainPage(props) {
       };
     });
   }
+ 
+  // fisher-yates shuffle
+  function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const temp = array[i];
+      array[i] = array[j];
+      array[j] = temp;
+    }
+    return array;
+  }
+
+  function decodeBase64(string) {
+    string = atob(string);
+    string = string.replace(/Ã©/, "é");
+    return string;
+  }
+
+  function handlePlayAgain() {
+    props.end()
+  }
+
+  // Only run on initial render/rerender
+  React.useEffect(() => {
+    if (!questions && !props.customQuizTopic) {
+      fetch("https://opentdb.com/api.php?amount=2&type=multiple&encode=base64")
+        .then((res) => res.json())
+        .then((data) => {
+          const questionObjects = data.results.map((questionData) => {
+            const { question, incorrect_answers, correct_answer } =
+              questionData;
+            return {
+              question: decodeBase64(question),
+              choices: shuffle([
+                { text: decodeBase64(correct_answer), correct: true },
+                { text: decodeBase64(incorrect_answers[0]), correct: false },
+                { text: decodeBase64(incorrect_answers[1]), correct: false },
+                { text: decodeBase64(incorrect_answers[2]), correct: false },
+              ]),
+            };
+          });
+          setQuestions(questionObjects);
+        });
+      } else if (!questions) {
+        setQuestions(getAIOutput(setQuestions, props.customQuizTopic));
+      }
+  }, []);
+
+  React.useEffect(() => {
+    if (questions) {
+      setAllFormData(
+        questions.reduce((object, questionData, index) => {
+          let formId = index + 1;
+          object[formId] = {
+            correct: findCorrectChoice(questionData).toString(),
+            checkedChoice: 0,
+          };
+          return object;
+        }, {})
+      )
+    }
+  }, [questions])
 
   // returns 1-4 to represent correct choice
   function findCorrectChoice(questionData) {
@@ -101,78 +156,21 @@ export default function MainPage(props) {
       })
   }
 
-  const questionElements = props.questions.map((questionData, index) => {
-    const { question, choices } = questionData;
-    const formId = (index + 1).toString();
-    const selectedChoiceNum = allFormData[formId].checkedChoice;
-    const correctChoiceNum = allFormData[formId].correct;
-    const hasQuestionExplanation = !!questionExplanations[formId]
-    const isWaitingForResponse = hasQuestionExplanation && questionExplanations[formId].waiting
-
-    const formInputs = choices.map((choice, index) => {
-      const choiceId = (index + 1).toString();
-      const isSelected = selectedChoiceNum === choiceId ? true : false;
-
-      const correctAnswerClass =
-        isQuizSubmitted && correctChoiceNum === choiceId
-          ? "show-correct-choice"
-          : "";
-      const submittedClass = isQuizSubmitted ? "submitted" : "";
-      const disabledClass = 
-        !correctAnswerClass && !isSelected ? "disable" : ""
-
-      return (
-        <>
-          <label className={`${correctAnswerClass} ${submittedClass} ${disabledClass}`}>
-            <input
-              onChange={handleChoiceSelection}
-              type="radio"
-              name="choice"
-              value={choiceId}
-              data-form-id={formId}
-              checked={isSelected}
-            />
-            {choice.text}
-          </label>
-          {(choiceId === "4" && submittedClass) && 
-          <button
-            className="ai-explaination"
-            onClick={() => handleExplanationBtn(formId, question)}
-            type="button"
-            disabled={
-              hasQuestionExplanation
-              && questionExplanations[formId].isBtnDisabled
-            }
-            >
-              Generate explanation
-          </button>}
-        </>
-      )
-    })
-
-    return (
-      <>
-        <form id={formId} className="question-container">
-          <h2>{question}</h2>
-          <div className="choices-container">{formInputs}</div>
-          
-          <p>
-            {(isQuizSubmitted && hasQuestionExplanation) && questionExplanations[formId].response}
-            {isWaitingForResponse && <i  className="fas fa-spinner fa-pulse"></i>}
-          </p>
-        </form>
-      </>
-    );
-  });
-
   return (
     <div className="questions-container">
-      {questionElements}
+      < QuestionElements
+        questions={questions}
+        questionExplanations={questionExplanations}
+        allFormData={allFormData}
+        isQuizSubmitted={isQuizSubmitted}
+        handleChoiceSelection={handleChoiceSelection}
+        handleExplanationBtn={handleExplanationBtn}
+      />
       {isQuizSubmitted ? (
         <div className="game-stat-container">
           <p className="score">{getScoreMessage()}</p>
           <button
-            onClick={props.fetchQuestions}
+            onClick={handlePlayAgain}
             type="button"
             >
             Play again
