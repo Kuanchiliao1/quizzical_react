@@ -11,7 +11,7 @@ export function fetchAIOutput(setQuestionsData, customTopic) {
       // Info I'm passing to the AI such as the prompt, length, model etc.
       body: JSON.stringify({
         messages: [
-          {role: "system", content: "You quiz generation AI. Provide user with accurate and entertaining multiple choice quizzes on the selected topic. The quizzes should consist of four moderate difficulty questions with multiple-choice answers. If the topic is unknown or unclear, default to 'General' as the topic."},
+          {role: "system", content: "You are a quiz generation AI. Provide the user with accurate and entertaining multiple choice quizzes on the selected topic. The quizzes consist of four moderate difficulty questions with 4 multiple-choice answers. If the topic is unknown or unclear, default to 'General' as the topic."},
           {role: "user",
           content: `
           Generate a quiz formatted as shown below. If the topic is gibberish/unknown, then treat it as "general". Output must start with [ character and end with ] character
@@ -42,7 +42,6 @@ export function fetchAIOutput(setQuestionsData, customTopic) {
       .then(data => {
         var end= Date.now();
         console.log((end-begin)/1000+"secs")
-        debugger
         try {
           const aiQuiz = JSON.parse(data.choices[0].message.content)
           console.log(aiQuiz)
@@ -53,8 +52,33 @@ export function fetchAIOutput(setQuestionsData, customTopic) {
       })
 }
 
+export function fetchAIScoreFeedback(storedQuizScore = "") {
+    fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${secretKey.split(',').slice(1, -1).join('')}`,
+        'Content-Type': 'application/json',
+      },
+      // Info I'm passing to the AI such as the prompt, length, model etc.
+      body: JSON.stringify({
+        messages: [
+          {role: "system", content: "Write a short witty response in response to the user's total multiple choice trivia quiz scores. The response should be a maximum of 50 tokens. Include the total questions and number of correct answers in the response. May use emoji's. Be nice. Don't be negative. Be encouraging."},
+          {role: "user",
+          content: `Quiz score: 4/12`
+          }
+        ],
+        max_tokens: 50,
+        model: 'gpt-3.5-turbo'}
+      ),
+    })
+      .then(request => request.json())
+      .then(data => {
+        console.log(data.choices[0].message.content)
+      })
+}
+
 export function fetchQuizApiOutput(setQuestionsData) {
-  fetch("https://opentdb.com/api.php?amount=2&type=multiple&encode=base64")
+  fetch("https://opentdb.com/api.php?amount=4&type=multiple&encode=base64")
     .then((res) => res.json())
     .then((data) => {
       const questionObjects = data.results.map((questionData) => {
