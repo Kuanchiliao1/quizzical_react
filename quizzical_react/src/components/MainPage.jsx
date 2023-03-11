@@ -66,16 +66,31 @@ export default function MainPage(props) {
   function submitQuiz() {
     if (areFormsAllFilled()) {
       setIsQuizSubmitted((oldBoolean) => !oldBoolean);
+      props.setStoredQuizData(oldData => {
+        const [totalCorrect, totalQuestions] = getScore()
+        debugger
+        return ({
+          ...oldData,
+          questionsCorrect: oldData.questionsCorrect + totalCorrect,
+          questionsTotal: oldData.questionsTotal + totalQuestions
+        })
+      })
     } else {
       alert("Please answer all questions!");
     }
   }
 
   function getScoreMessage() {
+    const [totalCorrect, totalQuestions] = getScore()
+
+    return `You scored ${totalCorrect}/${totalQuestions} correct answers`
+  }
+
+  function getScore() {
     const formArray = Object.values(allFormData)
     const totalCorrect = formArray.filter(form => form.correct === form.checkedChoice).length
     const totalQuestions = formArray.length
-    return `You scored ${totalCorrect}/${totalQuestions} correct answers`
+    return [totalCorrect, totalQuestions]
   }
   
   function handleExplanationBtn(formId, question) {
@@ -124,6 +139,34 @@ export default function MainPage(props) {
       })
   }
 
+  function getBasicQuestionData(questionId) {
+    const questionData = questionsData[questionId - 1]
+    const correctAnswerIndex = allFormData[questionId].correct - 1
+    const chosenAnswerIndex = allFormData[questionId].checkedChoice - 1
+    const explanation = questionExplanations[questionId] && questionExplanations[questionId].response
+
+    return ({
+      questionText: questionData.question,
+      correctAnswerText: questionData.choices[correctAnswerIndex].text,
+      chosenAnswerText: questionData.choices[chosenAnswerIndex].text,
+      explanation: explanation,
+    })
+  }
+
+  
+  function handleSaveBtn(questionId) {
+    props.setStoredQuizData(oldData => {
+      return ({
+        ...oldData,
+        savedQuestions: [...oldData.savedQuestions, getBasicQuestionData(questionId)]
+      })
+    })
+  }
+
+  // if (questionsData && allFormData && isQuizSubmitted) {
+  //   getBasicQuestionData(1)
+  // }
+
   return (
     <div className="questions-container">
       < QuestionElements
@@ -133,6 +176,7 @@ export default function MainPage(props) {
         isQuizSubmitted={isQuizSubmitted}
         handleChoiceSelection={handleChoiceSelection}
         handleExplanationBtn={handleExplanationBtn}
+        handleSaveBtn={handleSaveBtn}
       />
       {isQuizSubmitted ? (
         <div className="game-stat-container">
@@ -157,3 +201,4 @@ export default function MainPage(props) {
     </div>
   );
 }
+
