@@ -10,6 +10,9 @@ export default function QuestionElements(props) {
       const correctChoiceNum = props.allFormData[formId].correct;
       const hasQuestionExplanation = !!props.questionExplanations[formId]
       const isWaitingForResponse = hasQuestionExplanation && props.questionExplanations[formId].waiting
+      const isSaved = props.storedQuizData.savedQuestions.some(form => {
+        return question === form.questionText
+      })
   
       const formInputs = choices.map((choice, index) => {
         const choiceId = (index + 1).toString();
@@ -22,8 +25,7 @@ export default function QuestionElements(props) {
         const submittedClass = props.isQuizSubmitted ? "submitted" : "";
         const disabledClass = 
           !correctAnswerClass && !isSelected ? "disable" : ""
-  
-        return (
+        const choiceElement = (
           <div key={`form${formId}question${choiceId}`}>
             <label className={`${correctAnswerClass} ${submittedClass} ${disabledClass}`}>
               <input
@@ -38,28 +40,43 @@ export default function QuestionElements(props) {
             </label>
           </div>
         )
+        return choiceElement
       })
-  
+
       return (
         <>
           <form id={formId} className="question-container">
             <h2>{question}</h2>
             <div className="choices-container">{formInputs}</div>
-            {props.isQuizSubmitted && 
-            <button
-              className="ai-explaination"
-              onClick={() => props.handleExplanationBtn(formId, question)}
-              type="button"
-              disabled={
-                hasQuestionExplanation
-                && props.questionExplanations[formId].isBtnDisabled
-              }
-              >
-                Generate explanation
-            </button>}
+            <div className="explanation-btn-container">
+              {props.isQuizSubmitted &&
+              <button
+                className="ai-explaination"
+                onClick={() => props.handleExplanationBtn(formId, question)}
+                type="button"
+                tabIndex="1"
+                disabled={
+                  hasQuestionExplanation
+                  && props.questionExplanations[formId].isBtnDisabled
+                }
+                >
+                  Generate explanation
+              </button>}
+              {props.isQuizSubmitted && 
+              <button
+                className="save-question"
+                onClick={() => {
+                  props.handleSaveBtn(formId)
+                }}
+                type="button"
+                disabled={isSaved}
+                >
+                  {isSaved ? "✅ Saved" : "Save"}
+              </button>}
+            </div>
             <p>
               {(props.isQuizSubmitted && hasQuestionExplanation) && props.questionExplanations[formId].response}
-              {isWaitingForResponse && <i  className="fas fa-spinner fa-pulse"></i>}
+              {isWaitingForResponse && <i  className="explanation-spinner fas fa-spinner fa-pulse"></i>}
             </p>
           </form>
         </>
