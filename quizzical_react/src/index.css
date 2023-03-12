@@ -98,6 +98,10 @@ p.score-message {
   border-bottom: #D6DBF5 2px solid;
 }
 
+.saved-question-container p {
+  margin-top: 0;
+}
+
 .quiz-components-container {
   display: flex;
   flex-direction: column;
@@ -125,6 +129,7 @@ p.score-message {
   max-width: 70%;
   margin: 0 auto;
   gap: 2rem;
+  max-width: 80%;
 }
 
 /* COMPONENTS */
@@ -157,10 +162,6 @@ button.view-saved-questions {
   padding-block: 1rem;
 }
 
-button.reset-score {
-  background-color: #d394cf;
-}
-
 button.view-saved-questions {
   background-color: rgb(111, 207, 111);
   flex-grow: 3;
@@ -172,6 +173,7 @@ button.view-saved-questions {
   flex-direction: row;
   justify-content: space-between;
   flex-wrap: wrap;
+  row-gap: 1rem;
 }
 
 form p {
@@ -195,7 +197,8 @@ input.custom-quiz {
 
 label,
 button.ai-explaination,
-button.save-question {
+button.save-question,
+button.delete-question {
   display: grid;
   position: relative;
   margin-bottom: 1.25rem;
@@ -211,12 +214,21 @@ button.save-question {
 }
 
 button.ai-explaination,
-button.save-question {
+button.save-question,
+button.delete-question {
   margin: 0;
   margin-bottom: 1.25rem;
   outline: none;
-  background: #daa7d7;
   align-self: start;
+}
+
+button.ai-explaination {
+  background-color: #4d5b9e;
+}
+
+button.delete-question,
+button.reset-score {
+  background: #e04b34;
 }
 
 button.save-question {
