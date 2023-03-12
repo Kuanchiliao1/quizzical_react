@@ -62,7 +62,7 @@ export function fetchAIScoreFeedback(storedQuizScore = "") {
       // Info I'm passing to the AI such as the prompt, length, model etc.
       body: JSON.stringify({
         messages: [
-          {role: "system", content: "Write a short witty response in response to the user's total multiple choice trivia quiz scores. The response should be a maximum of 50 tokens. Include the total questions and number of correct answers in the response. May use emoji's. Be nice. Don't be negative. Be encouraging."},
+          {role: "system", content: "Maximum of 10 tokens. Write short message that includes the whole quiz score in response. May use emoji's. Be nice. Don't be negative. Be encouraging."},
           {role: "user",
           content: `Quiz score: 4/12`
           }
