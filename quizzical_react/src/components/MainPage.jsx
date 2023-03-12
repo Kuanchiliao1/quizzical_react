@@ -68,7 +68,6 @@ export default function MainPage(props) {
       setIsQuizSubmitted((oldBoolean) => !oldBoolean);
       props.setStoredQuizData(oldData => {
         const [totalCorrect, totalQuestions] = getScore()
-        debugger
         return ({
           ...oldData,
           questionsCorrect: oldData.questionsCorrect + totalCorrect,
@@ -104,6 +103,8 @@ export default function MainPage(props) {
       }
     })
 
+    const {chosenAnswerText, correctAnswerText} = getBasicQuestionData(formId)
+
     const secretKey = 'stuff here to do,s,k,-,w,X,a,p,E,k,f,1,8,7,t,c,Y,o,E,e,C,F,f,d,T,3,B,l,b,k,F,J,N,X,5,F,l,3,v,E,7,m,6,e,4,7,A,b,r,x,6,p,no stuff here to do!';
     fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -114,9 +115,9 @@ export default function MainPage(props) {
       // Info I'm passing to the AI such as the prompt, length, model etc.
       body: JSON.stringify({
         messages: [
-          {role: "system", content: "You are an AI assistant capable of providing the user with any request. You have a fun loving personality and are humorous"},
+          {role: "system", content: "You are an AI assistant with a fun, loving, and humorous personality."},
           {role: "user",
-          content: `${question} Give a short and witty one paragraph long explanation for someone without context. Use emojis as appropriate.`
+          content: `Question: ${question} Correct answer: ${correctAnswerText}. User answer: ${chosenAnswerText}. Give a short and witty one paragraph long explanation for someone without context. Use emojis as appropriate. Give BRIEF positive feedback if answered correctly or explain why their selected choice was wrong.`
           }
         ],
         max_tokens: 250,
@@ -143,17 +144,15 @@ export default function MainPage(props) {
     const questionData = questionsData[questionId - 1]
     const correctAnswerIndex = allFormData[questionId].correct - 1
     const chosenAnswerIndex = allFormData[questionId].checkedChoice - 1
-    const explanation = questionExplanations[questionId] && questionExplanations[questionId].response
 
     return ({
       questionText: questionData.question,
       correctAnswerText: questionData.choices[correctAnswerIndex].text,
       chosenAnswerText: questionData.choices[chosenAnswerIndex].text,
-      explanation: explanation,
     })
   }
 
-  
+
   function handleSaveBtn(questionId) {
     props.setStoredQuizData(oldData => {
       return ({
@@ -163,15 +162,12 @@ export default function MainPage(props) {
     })
   }
 
-  // if (questionsData && allFormData && isQuizSubmitted) {
-  //   getBasicQuestionData(1)
-  // }
-
   return (
     <div className="questions-container">
       < QuestionElements
         questions={questionsData}
         questionExplanations={questionExplanations}
+        storedQuizData={props.storedQuizData}
         allFormData={allFormData}
         isQuizSubmitted={isQuizSubmitted}
         handleChoiceSelection={handleChoiceSelection}
