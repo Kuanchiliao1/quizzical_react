@@ -6,6 +6,7 @@ import MainPage from "./components/MainPage";
 
 function App() {
   const [start, setStart] = React.useState(false);
+  const [viewSaved, setViewSaved] = React.useState(false);
   const [customQuizTopic, setCustomQuizTopic] = React.useState("")
   const [storedQuizData, setStoredQuizData] = React.useState({
     questionsCorrect: 0,
@@ -30,12 +31,17 @@ function App() {
     window.localStorage.setItem("saved-quiz-information", JSON.stringify(storedQuizData))
   }, [storedQuizData])
 
+  const mainPage = <MainPage end={endQuiz} customQuizTopic={customQuizTopic} setStoredQuizData={setStoredQuizData} storedQuizData={storedQuizData} />
+  
+  const startPage = <StartPage start={startQuiz} setStoredQuizData={setStoredQuizData} storedQuizData={storedQuizData} setCustomQuizTopic={setCustomQuizTopic} customQuizTopic={customQuizTopic} setViewSaved={setViewSaved} viewSaved={viewSaved}/>
+
   return (
     <div className="App">
-      {start ? (
-        <MainPage end={endQuiz} customQuizTopic={customQuizTopic} setStoredQuizData={setStoredQuizData} />
-      ) : (
-        <StartPage start={startQuiz} setStoredQuizData={setStoredQuizData} storedQuizData={storedQuizData} setCustomQuizTopic={setCustomQuizTopic} customQuizTopic={customQuizTopic}/>
+      {
+        start ? (
+          mainPage
+        ) : (
+          startPage
       )}
     </div>
   );
