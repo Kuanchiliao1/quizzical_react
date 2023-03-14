@@ -40,11 +40,8 @@ export function fetchAIOutput(setQuestionsData, customTopic) {
     })
       .then(request => request.json())
       .then(data => {
-        var end= Date.now();
-        console.log((end-begin)/1000+"secs")
         try {
           const aiQuiz = JSON.parse(data.choices[0].message.content)
-          console.log(aiQuiz)
           setQuestionsData(parseQuiz(aiQuiz))
         } catch (e) {
           fetchQuizApiOutput(setQuestionsData)
@@ -52,7 +49,7 @@ export function fetchAIOutput(setQuestionsData, customTopic) {
       })
 }
 
-export function fetchAIScoreFeedback(storedQuizScore = "") {
+export function fetchAIScoreFeedback(setStoredQuizData, currentScore, totalScore) {
     fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -62,18 +59,23 @@ export function fetchAIScoreFeedback(storedQuizScore = "") {
       // Info I'm passing to the AI such as the prompt, length, model etc.
       body: JSON.stringify({
         messages: [
-          {role: "system", content: "Maximum of 10 tokens. Write short message that includes the whole quiz score in response. May use emoji's. Be nice. Don't be negative. Be encouraging."},
+          {role: "system", content: "You are a kind, witty, encouraging AI assistant. Provide the user with feedback on their most recent quiz score and their total quiz score. Include both the score and the total number of questions. Use emojis, 50 tokens max, don't be mean."},
           {role: "user",
-          content: `Quiz score: 4/12`
+          content: `Recent quiz score: ${currentScore} Total score: ${totalScore}`
           }
         ],
-        max_tokens: 50,
+        max_tokens: 70,
         model: 'gpt-3.5-turbo'}
       ),
     })
       .then(request => request.json())
       .then(data => {
-        console.log(data.choices[0].message.content)
+        setStoredQuizData(oldData => {
+          return ({
+            ...oldData,
+            scoreFeedback: data.choices[0].message.content
+          })
+        })
       })
 }
 
