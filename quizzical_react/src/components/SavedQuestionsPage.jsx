@@ -15,8 +15,6 @@ export default function SavedQuestionsPage(props) {
   function handleExplanationBtn(questionIndex) {
     const question = props.storedQuizData.savedQuestions[questionIndex].questionText
 
-    console.log(question)
-
     props.setStoredQuizData(oldData => {
       const storedQuestions = 
         oldData.savedQuestions.map((questionData, index) => {
@@ -38,7 +36,6 @@ export default function SavedQuestionsPage(props) {
       })
     })
 
-    console.log(props.storedQuizData.savedQuestions)
     const secretKey = 'stuff here to do,s,k,-,w,X,a,p,E,k,f,1,8,7,t,c,Y,o,E,e,C,F,f,d,T,3,B,l,b,k,F,J,N,X,5,F,l,3,v,E,7,m,6,e,4,7,A,b,r,x,6,p,no stuff here to do!';
     fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -83,7 +80,6 @@ export default function SavedQuestionsPage(props) {
         })
       })
   }
-  console.log(props.storedQuizData.savedQuestions)
   return (
     <div>
       <button onClick={() => props.handleViewSavedBtn()}>Back to home</button>
