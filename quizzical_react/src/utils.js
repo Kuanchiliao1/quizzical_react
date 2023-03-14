@@ -59,9 +59,16 @@ export function fetchAIScoreFeedback(setStoredQuizData, currentScore, totalScore
       // Info I'm passing to the AI such as the prompt, length, model etc.
       body: JSON.stringify({
         messages: [
-          {role: "system", content: "You are a kind, witty, encouraging AI assistant. Provide the user with feedback on their most recent quiz score and their total quiz score. Include both the score and the total number of questions. Use emojis, 50 tokens max, don't be mean."},
+          {role: "system", content: "You are a kind, witty, not mean, and encouraging AI assistant. Provide the user with 2 sentence feedback their quiz scores. May use emojis. Always repeat back scores to user."},
           {role: "user",
-          content: `Recent quiz score: ${currentScore} Total score: ${totalScore}`
+          content: `
+          Input:
+          Recent quiz score: 1/4 Total score: 25/80
+          Output:
+          👍Keep up the great effort! You got 1/4 on the recent quiz, bringing your total score to 25/80. Keep striving towards progress! 👏
+          Input:
+          Recent quiz score: ${currentScore} Total score: ${totalScore}
+          Output:`
           }
         ],
         max_tokens: 70,
