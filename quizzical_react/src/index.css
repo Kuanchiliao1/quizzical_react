@@ -92,6 +92,7 @@ p.score-message {
 .questions-container {
   width: 80%;
   margin: 3rem auto;
+  max-width: 38rem;
 }
 
 .question-container {
@@ -283,4 +284,9 @@ label.disable.submitted {
 
 label.submitted {
   pointer-events: none;
+}
+
+.quiz-loading {
+  display: block;
+  margin-top: 1rem;
 }
