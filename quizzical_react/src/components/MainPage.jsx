@@ -1,7 +1,7 @@
 import "../index.css";
 import React from "react";
 import QuestionElements from "./QuestionElements"
-import {fetchAIOutput, fetchQuizApiOutput} from "../utils";
+import {fetchAIOutput, fetchQuizApiOutput, fetchAIScoreFeedback} from "../utils";
 
 export default function MainPage(props) {
   const [allFormData, setAllFormData] = React.useState(null);
@@ -66,14 +66,18 @@ export default function MainPage(props) {
   function submitQuiz() {
     if (areFormsAllFilled()) {
       setIsQuizSubmitted((oldBoolean) => !oldBoolean);
+      const [totalCorrect, totalQuestions] = getScore()
+      const thisQuizScore = `${totalCorrect}/${totalQuestions}`
+      const totalQuizScore = `${props.storedQuizData.questionsCorrect + totalCorrect}/${props.storedQuizData.questionsTotal + totalQuestions}`
       props.setStoredQuizData(oldData => {
-        const [totalCorrect, totalQuestions] = getScore()
         return ({
           ...oldData,
           questionsCorrect: oldData.questionsCorrect + totalCorrect,
-          questionsTotal: oldData.questionsTotal + totalQuestions
+          questionsTotal: oldData.questionsTotal + totalQuestions,
+          lastQuizScore: `${totalCorrect}/${totalQuestions}`
         })
       })
+      fetchAIScoreFeedback(props.setStoredQuizData, thisQuizScore, totalQuizScore)
     } else {
       alert("Please answer all questions!");
     }
@@ -105,6 +109,8 @@ export default function MainPage(props) {
 
     const {chosenAnswerText, correctAnswerText} = getBasicQuestionData(formId)
 
+    const userScoreFeedback = chosenAnswerText === correctAnswerText? "User answered correctly!" : `Incorrect user answer: ${chosenAnswerText}`
+
     const secretKey = 'stuff here to do,s,k,-,w,X,a,p,E,k,f,1,8,7,t,c,Y,o,E,e,C,F,f,d,T,3,B,l,b,k,F,J,N,X,5,F,l,3,v,E,7,m,6,e,4,7,A,b,r,x,6,p,no stuff here to do!';
     fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -117,7 +123,7 @@ export default function MainPage(props) {
         messages: [
           {role: "system", content: "You are an AI assistant with a fun, loving, and humorous personality."},
           {role: "user",
-          content: `Question: ${question} Correct answer: ${correctAnswerText}. User answer: ${chosenAnswerText}. Give a short and witty one paragraph long explanation for someone without context. Use emojis as appropriate. Give BRIEF positive feedback if answered correctly or explain why their selected choice was wrong.`
+          content: `Question: ${question} Correct answer: ${correctAnswerText}. ${userScoreFeedback}. Give a short and witty five sentence long explanation for someone without context. Use emojis as appropriate. Give BRIEF positive feedback if answered correctly or explain why their selected choice was wrong.`
           }
         ],
         max_tokens: 250,
@@ -190,7 +196,8 @@ export default function MainPage(props) {
       {!questionsData && 
         <div>
           <p className="loading">
-            Generating quiz... <i  className="fas fa-spinner fa-pulse"></i>
+          🤖 Hang tight while your quiz is being generated...
+            <i className="quiz-loading fas fa-spinner fa-pulse"></i>
           </p>
         </div>
       }
