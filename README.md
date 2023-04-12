@@ -26,7 +26,7 @@ npm install
 npm run dev
 ```
 
-## Usage
+## 🔨 Usage
 
 The main features of Quizzical are:
 
