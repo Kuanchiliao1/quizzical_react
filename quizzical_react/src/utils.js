@@ -48,6 +48,7 @@ export function fetchAIOutput(setQuestionsData, customTopic) {
           const aiQuiz = JSON.parse(data.choices[0].message.content)
           setQuestionsData(parseQuiz(aiQuiz))
         } catch (e) {
+          alert('I did not understand your custom topic. Here is a general quiz.')
           fetchQuizApiOutput(setQuestionsData)
         }
       })
