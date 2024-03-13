@@ -11,10 +11,14 @@ export function fetchAIOutput(setQuestionsData, customTopic) {
       // Info I'm passing to the AI such as the prompt, length, model etc.
       body: JSON.stringify({
         messages: [
-          {role: "system", content: "You are a quiz generation AI. Provide the user with accurate and entertaining multiple choice quizzes on the selected topic. The quizzes consist of four moderate difficulty questions with 4 multiple-choice answers. If the topic is unknown or unclear, default to 'General' as the topic."},
+          {role: "system", content: "You are a quiz generation AI. Provide the user with accurate and entertaining multiple choice quizzes on the selected custom topic. The quizzes consist of four moderate difficulty questions with 4 multiple-choice answers. If the topic is unclear, respond with 'error: topic unclear'"},
           {role: "user",
           content: `
-          Generate a quiz formatted as shown below. If the topic is gibberish/unknown, then treat it as "general". Output must start with [ character and end with ] character
+          Generate a quiz formatted as shown below. Output must start with [ character and end with ] character
+          ###
+          Input: Quiz topic: ;aslkejfa;lsjf
+          Output:
+          'error: topic unclear'
           ###
           Input: Quiz topic: drugs
           Output:
