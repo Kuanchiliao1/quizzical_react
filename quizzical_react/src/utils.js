@@ -39,7 +39,7 @@ export function fetchAIOutput(setQuestionsData, customTopic) {
           }
         ],
         max_tokens: 500,
-        model: 'gpt-3.5-turbo'}
+        model: 'gpt-4-turbo-preview'}
       ),
     })
       .then(request => request.json())
