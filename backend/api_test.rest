@@ -1,0 +1,6 @@
+POST http://localhost:3006/api/generate-custom-quiz
+content-type: application/json
+
+{
+  "topic": "test"
+}
