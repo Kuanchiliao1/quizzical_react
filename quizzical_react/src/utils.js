@@ -100,12 +100,12 @@ export function fetchQuizApiOutput(setQuestionsData) {
           questionData;
         return {
           question: decodeBase64(question),
-          choices: shuffle([
+          choices: [
             { text: decodeBase64(correct_answer), correct: true },
             { text: decodeBase64(incorrect_answers[0]), correct: false },
             { text: decodeBase64(incorrect_answers[1]), correct: false },
             { text: decodeBase64(incorrect_answers[2]), correct: false },
-          ]),
+          ],
         };
       });
       setQuestionsData(questionObjects);
