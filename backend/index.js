@@ -5,29 +5,38 @@ const express = require('express');
 const app = express();
 app.use(express.json());
 
-function fetchOpenAIOutput(messages, model='gpt-3.5-turbo', max_tokens=70) {
-  console.log('fetch function working')
-  return fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${process.env.OPENAI_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      // Info I'm passing to the AI such as the prompt, length, model etc.
-      body: JSON.stringify({
-        messages,
-        max_tokens,
-        model}
-      ),
-    })
-      .then(res => res.json())
-      .then(data => data.choices[0].message.content);
-}
+async function fetchOpenAIOutput(messages, model, max_tokens) {
+  const endpoint = 'https://api.openai.com/v1/chat/completions';
+  const method = 'POST';
+  const headers = {
+    Authorization: `Bearer ${process.env.OPENAI_KEY}`,
+    'Content-Type': 'application/json',
+  };
 
-app.get('/', (req, res) => {
-  console.log(process.env.OPENAI_KEY);
-  res.send('<h1>HELLO!</h1>')
-})
+  const body = JSON.stringify({
+    messages,
+    max_tokens,
+    model}
+  );
+
+  try {
+    const response = await fetch(endpoint, {
+      method,
+      headers,
+      body
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error, response status is ${response.status}`)
+    }
+  
+    const data = await response.json();
+    console.log(data);
+    return data.choices[0].message.content;
+  } catch(error) {
+    console.log(error);
+  }
+}
 
 app.post('/api/generate-custom-quiz', async (req, res) => {
   /*
