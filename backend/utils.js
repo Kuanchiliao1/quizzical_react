@@ -1,19 +1,24 @@
 function parseQuiz(quizString) {
-  const array = JSON.parse(quizString)
-  return array.map(question => {
-    const questionArray = question.split('^|')
-    const questionText = questionArray[0]
-    const answers = questionArray.slice(1)
-    return ({
-      question: questionText,
-      choices: shuffle(answers.map(answer => {
-        return {
-          text: answer.replace('(T)', '').trim(),
-          correct: answer.includes('(T)')
-        }
-      })),
+  try {
+    const array = JSON.parse(quizString)
+    return array.map(question => {
+      const questionArray = question.split('^|')
+      const questionText = questionArray[0]
+      const answers = questionArray.slice(1)
+      return ({
+        question: questionText,
+        choices: shuffle(answers.map(answer => {
+          return {
+            text: answer.replace('(T)', '').trim(),
+            correct: answer.includes('(T)')
+          }
+        })),
+      })
     })
-  })
+  } catch(error) {
+    console.log({error})
+    console.log({quizString})
+  }
 }
 
 // fisher-yates shuffle
