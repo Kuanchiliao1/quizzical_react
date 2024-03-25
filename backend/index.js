@@ -47,8 +47,9 @@ async function fetchOpenAIOutput(messages, model, max_tokens) {
 app.post("/api/generate-score-feedback", async (req, res) => {
   const { currentScore, totalScore } = req.body;
   const message = modelMessages.scoreFeedback(currentScore, totalScore);
-  const response = await fetchOpenAIOutput(message, "gpt-3.5-turbo", 70);
-  console.log(response);
+  const responseData = await fetchOpenAIOutput(message, "gpt-3.5-turbo", 70);
+  console.log(responseData);
+  res.json(responseData);
   /*
     - Call the fetchOpenAIOutput function
       - pass in info from request
