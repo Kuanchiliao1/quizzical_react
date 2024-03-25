@@ -88,11 +88,11 @@ app.post('/api/generate-custom-quiz', async (req, res) => {
   res.json(parseQuiz(outputString));
 })
 
-//TODO
+// TODO: move opendb request here from frontend
 app.get('/api/opendb', (req, res) => {
 
 })
 
-/* TODO: get ports to auto update */
+// TODO: get ports to auto update
 const PORT = 3006;
 app.listen(PORT);
