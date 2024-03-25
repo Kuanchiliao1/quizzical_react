@@ -5,11 +5,10 @@ export function fetchAIOutput(setQuestionsData, customTopic) {
   console.log('called fetchAIOutput')
   // Expect output to be parsed quiz array
   axios.post('http://localhost:3006/api/generate-custom-quiz', {topic: customTopic})
-    .then(data => {
+    .then(res => {
       try {
-        const aiQuiz = JSON.parse(data.choices[0].message.content)
-        console.log({aiQuiz})
-        setQuestionsData(parseQuiz(aiQuiz))
+        const quizData = res.data;
+        setQuestionsData(quizData);
       } catch (e) {
         alert('Sorry! I could not understand your custom topic. Here is a general quiz instead.')
         fetchQuizApiOutput(setQuestionsData)
