@@ -1,5 +1,3 @@
-const secretKey =
-  "stuff here to do,s,k,-,w,X,a,p,E,k,f,1,8,7,t,c,Y,o,E,e,C,F,f,d,T,3,B,l,b,k,F,J,N,X,5,F,l,3,v,E,7,m,6,e,4,7,A,b,r,x,6,p,no stuff here to do!";
 import axios from "axios";
 
 export function fetchAIOutput(setQuestionsData, customTopic) {
@@ -27,45 +25,16 @@ export function fetchAIScoreFeedback(
   currentScore,
   totalScore
 ) {
-  fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${secretKey.split(",").slice(1, -1).join("")}`,
-      "Content-Type": "application/json",
-    },
-    // Info I'm passing to the AI such as the prompt, length, model etc.
-    body: JSON.stringify({
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are a kind, witty, not mean, and encouraging AI assistant. Provide the user with 2 sentence feedback their quiz scores. May use emojis. Always repeat back scores to user.",
-        },
-        {
-          role: "user",
-          content: `
-          Input:
-          Recent quiz score: 1/4 Total score: 25/80
-          Output:
-          👍Keep up the great effort! You got 1/4 on the recent quiz, bringing your total score to 25/80. Keep striving towards progress! 👏
-          Input:
-          Recent quiz score: ${currentScore} Total score: ${totalScore}
-          Output:`,
-        },
-      ],
-      max_tokens: 70,
-      model: "gpt-3.5-turbo",
-    }),
-  })
-    .then((request) => request.json())
-    .then((data) => {
+  axios.post('http://localhost:3006/api/generate-score-feedback', {currentScore, totalScore})
+    .then(res => {
       setStoredQuizData((oldData) => {
+        console.log({data: res.data})
         return {
           ...oldData,
-          scoreFeedback: data.choices[0].message.content,
+          scoreFeedback: res.data,
         };
       });
-    });
+    })
 }
 
 export function fetchQuizApiOutput(setQuestionsData) {
