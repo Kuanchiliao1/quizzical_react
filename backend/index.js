@@ -97,5 +97,5 @@ app.post("/api/generate-custom-quiz", async (req, res) => {
 app.get("/api/opendb", (req, res) => {});
 
 // TODO: get ports to auto update
-const PORT = 3006;
-app.listen(PORT);
+const PORT = process.env.PORT || 3006;
+app.listen(PORT, () => console.log('listening on port: ', PORT));

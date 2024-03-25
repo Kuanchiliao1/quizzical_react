@@ -4,7 +4,7 @@ export function fetchAIOutput(setQuestionsData, customTopic) {
   console.log("called fetchAIOutput");
   // Expect output to be parsed quiz array
   axios
-    .post("http://localhost:3006/api/generate-custom-quiz", {
+    .post("https://backend-quiz.fly.dev/api/generate-custom-quiz", {
       topic: customTopic,
     })
     .then((res) => {
@@ -25,7 +25,7 @@ export function fetchAIScoreFeedback(
   currentScore,
   totalScore
 ) {
-  axios.post('http://localhost:3006/api/generate-score-feedback', {currentScore, totalScore})
+  axios.post('https://backend-quiz.fly.dev/api/generate-score-feedback', {currentScore, totalScore})
     .then(res => {
       setStoredQuizData((oldData) => {
         console.log({data: res.data})
