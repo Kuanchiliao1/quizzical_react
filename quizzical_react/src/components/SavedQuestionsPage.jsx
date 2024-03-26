@@ -94,7 +94,7 @@ export default function SavedQuestionsPage(props) {
               <h2>{`${index + 1}. ${question}`}</h2>
               <div className="explanation-btn-container">
                 <button
-                  className="ai-explaination"
+                  className="ai-explanation"
                   onClick={() => handleExplanationBtn(index)}
                   type="button"
                   disabled={

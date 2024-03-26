@@ -197,7 +197,7 @@ input.custom-quiz {
 }
 
 label,
-button.ai-explaination,
+button.ai-explanation,
 button.save-question,
 button.delete-question {
   display: grid;
@@ -214,7 +214,7 @@ button.delete-question {
   -ms-user-select: none;
 }
 
-button.ai-explaination,
+button.ai-explanation,
 button.save-question,
 button.delete-question {
   margin: 0;
@@ -223,7 +223,7 @@ button.delete-question {
   align-self: start;
 }
 
-button.ai-explaination {
+button.ai-explanation {
   background-color: #4d5b9e;
 }
 
@@ -237,7 +237,7 @@ button.save-question {
   background-color: #59b887;
 }
 
-button.ai-explaination:disabled,
+button.ai-explanation:disabled,
 button.reset-score:disabled {
   background: #D6DBF5;
   cursor: not-allowed;

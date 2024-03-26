@@ -51,7 +51,7 @@ export default function QuestionElements(props) {
             <div className="explanation-btn-container">
               {props.isQuizSubmitted &&
               <button
-                className="ai-explaination"
+                className="ai-explanation"
                 onClick={() => props.handleExplanationBtn(formId, question)}
                 type="button"
                 tabIndex="1"
