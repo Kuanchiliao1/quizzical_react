@@ -5,7 +5,7 @@ import { fetchAIScoreFeedback } from "../utils";
 
 export default function StartPage(props) {
   const [isReset, setIsReset] = React.useState(null);
-  const [customScoreMessage, setCustomScoreMessage] = React.useState(null)
+  const [customScoreMessage, setCustomScoreMessage] = React.useState(null);
   const { questionsCorrect, questionsTotal } = props.storedQuizData;
 
   function handleInput(event) {
@@ -14,6 +14,7 @@ export default function StartPage(props) {
     });
   }
 
+  // TODO: Make this work for btn press as well
   function handleOnKeyDown(event) {
     if (event.key === "Enter") {
       props.start();
@@ -27,7 +28,7 @@ export default function StartPage(props) {
         ...oldScore,
         questionsCorrect: 0,
         questionsTotal: 0,
-        scoreFeedback: ""
+        scoreFeedback: "",
       };
     });
   }
@@ -46,9 +47,9 @@ export default function StartPage(props) {
   }
 
   React.useEffect(() => {
-    setCustomScoreMessage
+    setCustomScoreMessage;
     // fetchCustomScoreMessage()
-  }, [questionsCorrect, questionsTotal])
+  }, [questionsCorrect, questionsTotal]);
 
   return props.viewSaved ? (
     <SavedQuestionsPage
@@ -60,7 +61,8 @@ export default function StartPage(props) {
     <div className="start-page">
       <h1 className="title">🤖 Quizzical</h1>
       <p className="start-description">
-        {props.storedQuizData.scoreFeedback || "Quiz on random topics or enter your own topic to generate a custom quiz!"}
+        {props.storedQuizData.scoreFeedback ||
+          "Quiz on random topics or enter your own topic to generate a custom quiz!"}
         <span className="warning">
           ⚠️ Warning: AI questions and explanations may be *extremely*
           inaccurate
