@@ -1,28 +1,32 @@
 // TODO: Import Router components
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Link,
+  useNavigate,
+} from "react-router-dom";
 import React from "react";
 import "./index.css";
 import StartPage from "./components/StartPage";
 import MainPage from "./components/MainPage";
+import SavedQuestionsPage from "./components/SavedQuestionsPage";
 
 function App() {
-  // TODO: Remove this state
-  const [start, setStart] = React.useState(false);
-  // TODO: Remove this state
-  const [viewSaved, setViewSaved] = React.useState(false);
   const [customQuizTopic, setCustomQuizTopic] = React.useState("");
   const [storedQuizData, setStoredQuizData] = React.useState({
     questionsCorrect: 0,
     questionsTotal: 0,
     savedQuestions: [],
   });
+  const navigate = useNavigate();
 
-  // TODO: Use navigator instead of state here
   function startQuiz() {
-    setStart(true);
+    navigate("/main-questions");
   }
 
   function endQuiz() {
-    setStart(false);
+    navigate("/");
   }
 
   React.useEffect(() => {
@@ -37,33 +41,45 @@ function App() {
     );
   }, [storedQuizData]);
 
-  const mainPage = (
-    <MainPage
-      end={endQuiz}
-      customQuizTopic={customQuizTopic}
-      setStoredQuizData={setStoredQuizData}
-      storedQuizData={storedQuizData}
-    />
-  );
-
-  const startPage = (
-    <StartPage
-      start={startQuiz}
-      setStoredQuizData={setStoredQuizData}
-      storedQuizData={storedQuizData}
-      setCustomQuizTopic={setCustomQuizTopic}
-      customQuizTopic={customQuizTopic}
-      setViewSaved={setViewSaved}
-      viewSaved={viewSaved}
-    />
-  );
-
   return (
     <div className="App">
       {
-        // TODO: Replace and add router and routes here
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <StartPage
+                start={startQuiz}
+                setStoredQuizData={setStoredQuizData}
+                storedQuizData={storedQuizData}
+                setCustomQuizTopic={setCustomQuizTopic}
+                customQuizTopic={customQuizTopic}
+              />
+            }
+          ></Route>
+          <Route
+            path="/main-questions"
+            element={
+              <MainPage
+                end={endQuiz}
+                customQuizTopic={customQuizTopic}
+                setStoredQuizData={setStoredQuizData}
+                storedQuizData={storedQuizData}
+              />
+            }
+          ></Route>
+          <Route
+            path="/saved-questions"
+            element={
+              <SavedQuestionsPage
+                storedQuizData={storedQuizData}
+                setStoredQuizData={setStoredQuizData}
+                handleViewSavedBtn={() => navigate('/')}
+              />
+            }
+          ></Route>
+        </Routes>
       }
-      {start ? mainPage : startPage}
     </div>
   );
 }

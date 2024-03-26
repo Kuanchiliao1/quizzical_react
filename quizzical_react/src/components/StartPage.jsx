@@ -1,12 +1,12 @@
 import "../index.css";
 import React from "react";
-import SavedQuestionsPage from "./SavedQuestionsPage.jsx";
-import { fetchAIScoreFeedback } from "../utils";
+import { useNavigate } from 'react-router-dom'
 
 export default function StartPage(props) {
   const [isReset, setIsReset] = React.useState(null);
   const [customScoreMessage, setCustomScoreMessage] = React.useState(null);
   const { questionsCorrect, questionsTotal } = props.storedQuizData;
+  const navigate = useNavigate();
 
   function handleInput(event) {
     props.setCustomQuizTopic((oldInput) => {
@@ -34,7 +34,7 @@ export default function StartPage(props) {
   }
 
   function handleViewSavedBtn() {
-    props.setViewSaved((oldValue) => !oldValue);
+    navigate('/saved-questions')
   }
 
   function getScoreMessage() {
@@ -51,13 +51,7 @@ export default function StartPage(props) {
     // fetchCustomScoreMessage()
   }, [questionsCorrect, questionsTotal]);
 
-  return props.viewSaved ? (
-    <SavedQuestionsPage
-      storedQuizData={props.storedQuizData}
-      setStoredQuizData={props.setStoredQuizData}
-      handleViewSavedBtn={handleViewSavedBtn}
-    />
-  ) : (
+  return (
     <div className="start-page">
       <h1 className="title">🤖 Quizzical</h1>
       <p className="start-description">
